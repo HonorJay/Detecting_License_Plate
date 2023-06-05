@@ -17,5 +17,5 @@ original source from https://github.com/chequanghuy/Character-Time-series-Matchi
 
 # result.json
 <div align=center>
-<img src='result.png' width='300'>
+<img src='result.PNG' width='300'>
 </div>
