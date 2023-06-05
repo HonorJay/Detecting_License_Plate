@@ -14,3 +14,8 @@ original source from https://github.com/chequanghuy/Character-Time-series-Matchi
 ```python
 !python DETECTION.py --lp_weights object.pt --ch_weights char.pt --source test_video.mp4 --device cuda:0
 ```
+
+# result.json
+<div align=center>
+<img src='result.png' width='300'>
+</div>
