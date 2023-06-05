@@ -1,6 +1,6 @@
 original source from https://github.com/chequanghuy/Character-Time-series-Matching
 
-# git clone here
+# !git clone https://github.com/HonorJay/Detecting_License_Plate.git
 
 # cd /Detecting_License_Plate/Vietnamese/
 
