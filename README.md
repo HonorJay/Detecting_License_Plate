@@ -19,3 +19,17 @@ original source from https://github.com/chequanghuy/Character-Time-series-Matchi
 <div align=center>
 <img src='result.PNG' width='300'>
 </div>
+
+"FrameNo": [
+        {
+            "license_plate": {
+                "class": "rectangle license plate",
+                "confidence": "89.2%",
+                "bbox": [
+                    851.8202514648438,
+                    827.68408203125,
+                    924.2683715820312,
+                    847.652099609375
+                ]
+            },
+            "recognized_text": "lv680va"
