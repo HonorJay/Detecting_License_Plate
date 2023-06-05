@@ -20,6 +20,7 @@ original source from https://github.com/chequanghuy/Character-Time-series-Matchi
 <img src='result.PNG' width='300'>
 </div>
 
+```json
 "FrameNo": [
         {
             "license_plate": {
@@ -33,3 +34,4 @@ original source from https://github.com/chequanghuy/Character-Time-series-Matchi
                 ]
             },
             "recognized_text": "lv680va"
+```
