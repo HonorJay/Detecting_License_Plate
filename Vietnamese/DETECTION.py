@@ -154,7 +154,8 @@ def main():
                     bbox = lp_result[-1]
                     lp_result_dict = {"class": lp_result[0], "confidence": lp_result[1], "bbox": lp_result[2]}
                     lp_image = resized_img[int(bbox[1]):int(bbox[3]), int(bbox[0]):int(bbox[2])]
-                    cv2.imwrite(f'./license_plate8/lp_frame_{frame_id}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.jpg', lp_image)
+                    os.makedirs(f'./{opt.source}/', exist_ok=True)
+                    cv2.imwrite(f'./{opt.source}/lp_frame_{frame_id}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.jpg', lp_image)
                     if lp_image.size == 0:
                         print("\nEmpty bounding box for frame: ", frame_id, f"bbox: {int(bbox[0])}:{int(bbox[2])}, {int(bbox[1])}:{int(bbox[3])}")
                         break
