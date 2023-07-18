@@ -122,8 +122,6 @@ class Arguments:
         self.max_det = 1000
         self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
-opt = Arguments()
-
 def main(video_path):
     opt = Arguments(video_path)
     
