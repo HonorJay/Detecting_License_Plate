@@ -110,9 +110,10 @@ class Detection:
 
 
 class Arguments:
-    def __init__(self):
+    def __init__(self, video_path):
         self.lp_weights = 'Vietnamese/object.pt'
         self.ch_weights = 'Vietnamese/char.pt'
+        self.source = video_path
         self.lp_imgsz = [1280]
         self.ch_imgsz = [128]
         self.conf_thres = 0.1
@@ -122,13 +123,13 @@ class Arguments:
 
 opt = Arguments()
 
-def main(video):
-    opt = Arguments()
+def main(video_path):
+    opt = Arguments(video_path)
     
     lp_model=Detection(size=opt.lp_imgsz,weights_path=opt.lp_weights,device=opt.device,iou_thres=opt.iou_thres,conf_thres=opt.conf_thres)
     ch_model=Detection(size=opt.ch_imgsz,weights_path=opt.ch_weights,device=opt.device,iou_thres=opt.iou_thres,conf_thres=opt.conf_thres)
 
-    cap = cv2.VideoCapture(video)
+    cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
         raise IOError("Cannot open video")
 
