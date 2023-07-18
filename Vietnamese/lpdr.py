@@ -119,7 +119,7 @@ class Arguments:
         self.conf_thres = 0.1
         self.iou_thres = 0.5
         self.max_det = 1000
-        self.device = 'cuda:0'
+        self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
 opt = Arguments()
 
