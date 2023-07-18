@@ -111,7 +111,7 @@ class Detection:
 
 
 class Arguments:
-    def __init__(self, video_path):
+    def __init__(self, video_path="test_video.mp4"):
         self.lp_weights = 'Vietnamese/object.pt'
         self.ch_weights = 'Vietnamese/char.pt'
         self.source = video_path
