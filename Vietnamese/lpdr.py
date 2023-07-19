@@ -20,7 +20,7 @@ class Detection:
     def __init__(self, weights_path='.pt',size=(640,640),device='cpu',iou_thres=None,conf_thres=None):
         self.device=device
         self.char_model, self.names = self.load_model(weights_path)
-        self.size=size
+        self.size=(640,640)
         self.iou_thres=iou_thres
         self.conf_thres=conf_thres
 
