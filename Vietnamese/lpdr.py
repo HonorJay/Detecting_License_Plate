@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import sys
+import traceback
 
 sys.path.append('/work/Detecting_License_Plate/yolov5')
 
@@ -171,6 +172,7 @@ def main(video_path):
         return df
     except Exception as e:
         print(f"Error processing frame {frame_id}: {e}")
+        traceback.print_exc()  
     finally:
         cap.release()
         cv2.destroyAllWindows()
