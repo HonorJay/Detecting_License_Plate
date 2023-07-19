@@ -177,11 +177,11 @@ def main(video_path):
     finally:
         file_path = "/work/result.json"
         with open(file_path, 'w') as f:
-            json.dump(results, f)
+           json_object = json.dump(results, f)
         
     cap.release()
     cv2.destroyAllWindows()
-    return file_path
+    return json_object, results
 
 
     
