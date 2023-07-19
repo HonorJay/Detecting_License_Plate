@@ -172,13 +172,12 @@ def main(video_path):
 
             # results[frame_id] = frame_results  # Store results for this frame
         df = pd.DataFrame({"frame_number":frames, "license_plate_class":lp_classes, "license_plate_bbox":lp_bboxes, "recognized_text":recognized_text})
-
+        return df
     except Exception as e:
         print(f"Error processing frame {frame_id}: {e}")
     finally:
         cap.release()
         cv2.destroyAllWindows()
 
-        return df
 
     
