@@ -2,6 +2,7 @@ import numpy as np
 import torch
 import sys
 import traceback
+import json
 
 sys.path.append('/work/Detecting_License_Plate/yolov5')
 
@@ -131,31 +132,31 @@ def main(video_path):
         raise IOError("Cannot open video")
 
     num_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    # results = {}
+    results = {}
 
     try:
-        frames = []
-        lp_classes = []
-        lp_bboxes = []
-        rts = []
+        # frames = []
+        # lp_classes = []
+        # lp_bboxes = []
+        # rts = []
         for frame_id in range(num_frames):
             ret, frame = cap.read()
             if not ret:
                 break
             lp_results, resized_img = lp_model.detect(frame.copy()) 
                     
-            # frame_results = []
-            frames.append(frame_id)
+            frame_results = []
+            # frames.append(frame_id)
             for lp_result in lp_results:
                 if lp_result[0] in ['square license plate', 'rectangle license plate']:
                     bbox = lp_result[-1]
-                    # lp_result_dict = {"class": lp_result[0], "confidence": lp_result[1], "bbox": lp_result[2]}
-                    lp_classes.append(lp_result[0])
-                    lp_bboxes.append(lp_result[2])
+                    lp_result_dict = {"class": lp_result[0], "confidence": lp_result[1], "bbox": lp_result[2]}
+                    # lp_classes.append(lp_result[0])
+                    # lp_bboxes.append(lp_result[2])
                     lp_image = resized_img[int(bbox[1]):int(bbox[3]), int(bbox[0]):int(bbox[2])]
                     if lp_image.size == 0:
                         print("\nEmpty bounding box for frame: ", frame_id, f"bbox: {int(bbox[0])}:{int(bbox[2])}, {int(bbox[1])}:{int(bbox[3])}")
-                        break
+                        continue
                     ch_results, _ = ch_model.detect(lp_image)
 
                     rt = {}
@@ -164,18 +165,23 @@ def main(video_path):
                         rt[int(box[0])] = name
                     for key, value in sorted(rt.items()):
                         recognized_text += value
-                    rts.append(recognized_text)
-                    # frame_results.append({"license_plate": lp_result_dict, "recognized_text": recognized_text})
+                    # rts.append(recognized_text)
+                    frame_results.append({"license_plate": lp_result_dict, "recognized_text": recognized_text})
 
-            # results[frame_id] = frame_results  # Store results for this frame
-        df = pd.DataFrame({"frame_number":frames, "license_plate_class":lp_classes, "license_plate_bbox":lp_bboxes, "recognized_text":rts})
-        return df
+            results[frame_id] = frame_results  # Store results for this frame
+        # df = pd.DataFrame({"frame_number":frames, "license_plate_class":lp_classes, "license_plate_bbox":lp_bboxes, "recognized_text":rts})
+        # return df
     except Exception as e:
         print(f"Error processing frame {frame_id}: {e}")
         print(traceback.print_exc())  
     finally:
-        cap.release()
-        cv2.destroyAllWindows()
+        file_path = "/work/result.json"
+        with open(file_path, 'w') as f:
+            json.dump(results, f)
+        
+    cap.release()
+    cv2.destroyAllWindows()
+    return file_path
 
 
     
