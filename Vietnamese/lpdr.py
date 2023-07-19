@@ -1,8 +1,6 @@
 import numpy as np
 import torch
-import os
 import sys
-import argparse
 
 sys.path.append('/work/Detecting_License_Plate/yolov5')
 
@@ -12,8 +10,6 @@ from typing import List
 # from dynaconf import settings
 from models.experimental import attempt_load
 import cv2
-from tqdm import tqdm 
-from datetime import datetime
 import pandas as pd
 
 class Detection:
@@ -122,6 +118,7 @@ class Arguments:
         self.max_det = 1000
         self.device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
+
 def main(video_path):
     opt = Arguments(video_path)
     
@@ -139,13 +136,14 @@ def main(video_path):
         frames = []
         lp_classes = []
         lp_bboxes = []
-        for frame_id in tqdm(range(num_frames), desc='Processing video'):
+        rts = []
+        for frame_id in range(num_frames):
             ret, frame = cap.read()
             if not ret:
                 break
             lp_results, resized_img = lp_model.detect(frame.copy()) 
                     
-            frame_results = []
+            # frame_results = []
             frames.append(frame_id)
             for lp_result in lp_results:
                 if lp_result[0] in ['square license plate', 'rectangle license plate']:
@@ -154,8 +152,6 @@ def main(video_path):
                     lp_classes.append(lp_result[0])
                     lp_bboxes.append(lp_result[2])
                     lp_image = resized_img[int(bbox[1]):int(bbox[3]), int(bbox[0]):int(bbox[2])]
-                    os.makedirs(f'./{opt.source}/', exist_ok=True)
-                    cv2.imwrite(f'./{opt.source}/lp_frame_{frame_id}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.jpg', lp_image)
                     if lp_image.size == 0:
                         print("\nEmpty bounding box for frame: ", frame_id, f"bbox: {int(bbox[0])}:{int(bbox[2])}, {int(bbox[1])}:{int(bbox[3])}")
                         break
@@ -167,11 +163,11 @@ def main(video_path):
                         rt[int(box[0])] = name
                     for key, value in sorted(rt.items()):
                         recognized_text += value
-        
+                    rts.append(recognized_text)
                     # frame_results.append({"license_plate": lp_result_dict, "recognized_text": recognized_text})
 
             # results[frame_id] = frame_results  # Store results for this frame
-        df = pd.DataFrame({"frame_number":frames, "license_plate_class":lp_classes, "license_plate_bbox":lp_bboxes, "recognized_text":recognized_text})
+        df = pd.DataFrame({"frame_number":frames, "license_plate_class":lp_classes, "license_plate_bbox":lp_bboxes, "recognized_text":rts})
         return df
     except Exception as e:
         print(f"Error processing frame {frame_id}: {e}")
