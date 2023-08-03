@@ -13,6 +13,8 @@ from typing import List
 from models.experimental import attempt_load
 import cv2
 import pandas as pd
+from pororo import Pororo
+from PIL import Image
 
 class Detection:
     """Handles the object detection tasks."""
@@ -123,9 +125,7 @@ class Arguments:
 
 def main(video_path):
     opt = Arguments(video_path)
-    
     lp_model=Detection(size=opt.lp_imgsz,weights_path=opt.lp_weights,device=opt.device,iou_thres=opt.iou_thres,conf_thres=opt.conf_thres)
-    ch_model=Detection(size=opt.ch_imgsz,weights_path=opt.ch_weights,device=opt.device,iou_thres=opt.iou_thres,conf_thres=opt.conf_thres)
 
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
@@ -144,7 +144,6 @@ def main(video_path):
             if not ret:
                 break
             lp_results, resized_img = lp_model.detect(frame.copy()) 
-                    
             frame_results = []
             # frames.append(frame_id)
             for lp_result in lp_results:
@@ -157,16 +156,11 @@ def main(video_path):
                     if lp_image.size == 0:
                         print("\nEmpty bounding box for frame: ", frame_id, f"bbox: {int(bbox[0])}:{int(bbox[2])}, {int(bbox[1])}:{int(bbox[3])}")
                         continue
-                    ch_results, _ = ch_model.detect(lp_image)
+                    # save the temporary image for pororo OCR
+                    cv2.imwrite('./tmp.jpg',lp_image)
+                    ocr = Pororo(task='ocr', lang='ko')('./tmp.jpg')
 
-                    rt = {}
-                    recognized_text = ''
-                    for name, conf, box in ch_results:
-                        rt[int(box[0])] = name
-                    for key, value in sorted(rt.items()):
-                        recognized_text += value
-                    # rts.append(recognized_text)
-                    frame_results.append({"license_plate": lp_result_dict, "recognized_text": recognized_text})
+                    frame_results.append({"license_plate": lp_result_dict, "recognized_text": ocr})
 
             results[frame_id] = frame_results  # Store results for this frame
         # df = pd.DataFrame({"frame_number":frames, "license_plate_class":lp_classes, "license_plate_bbox":lp_bboxes, "recognized_text":rts})
