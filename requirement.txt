@@ -1,3 +1,4 @@
+#
 imutils==0.5.4
 joblib==1.1.0
 matplotlib
@@ -7,11 +8,18 @@ opencv-python==4.5.5.64
 packaging==21.3
 pandas
 scikit-learn
+scikit-image
 scipy
 seaborn==0.11.2
 tdqm==0.0.1
-tensorboard==2.9.0
+tensorboard==2.0.0
 thop==0.0.31.post2005241907
-torch==1.8.1
-torchvision==0.9.1
+torch==1.8.1+cpu -f https://download.pytorch.org/whl/cpu/torch_stable.html
+torchvision==0.9.1+cpu -f https://download.pytorch.org/whl/cpu/torch_stable.html
 tqdm==4.64.0
+pyyaml
+pororo
+
+#hdfs
+pyhdfs
+easydict
