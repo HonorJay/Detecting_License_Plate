@@ -8,13 +8,13 @@ sys.path.append('/work/Detecting_License_Plate/yolov5')
 
 from utils.general import non_max_suppression, scale_coords
 # from ai_core.object_detection.yolov5_custom.od.data.datasets import letterbox
-from typing import List
+# from typing import List
 # from dynaconf import settings
 from models.experimental import attempt_load
 import cv2
 import pandas as pd
 from pororo import Pororo
-from PIL import Image
+import logging
 
 class Detection:
     """Handles the object detection tasks."""
@@ -124,8 +124,10 @@ class Arguments:
 
 
 def main(video_path):
+    
     opt = Arguments(video_path)
     lp_model=Detection(size=opt.lp_imgsz,weights_path=opt.lp_weights,device=opt.device,iou_thres=opt.iou_thres,conf_thres=opt.conf_thres)
+    logging.warning("load model")
 
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
@@ -133,25 +135,18 @@ def main(video_path):
 
     num_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     results = {}
-
+    logging.warning("total frame : {}".format(num_frames))
     try:
-        # frames = []
-        # lp_classes = []
-        # lp_bboxes = []
-        # rts = []
         for frame_id in range(num_frames):
             ret, frame = cap.read()
             if not ret:
                 break
             lp_results, resized_img = lp_model.detect(frame.copy()) 
             frame_results = []
-            # frames.append(frame_id)
             for lp_result in lp_results:
                 if lp_result[0] in ['square license plate', 'rectangle license plate']:
                     bbox = lp_result[-1]
                     lp_result_dict = {"class": lp_result[0], "confidence": lp_result[1], "bbox": lp_result[2]}
-                    # lp_classes.append(lp_result[0])
-                    # lp_bboxes.append(lp_result[2])
                     lp_image = resized_img[int(bbox[1]):int(bbox[3]), int(bbox[0]):int(bbox[2])]
                     if lp_image.size == 0:
                         print("\nEmpty bounding box for frame: ", frame_id, f"bbox: {int(bbox[0])}:{int(bbox[2])}, {int(bbox[1])}:{int(bbox[3])}")
@@ -163,11 +158,11 @@ def main(video_path):
                     frame_results.append({"license_plate": lp_result_dict, "recognized_text": ocr})
 
             results[frame_id] = frame_results  # Store results for this frame
-        # df = pd.DataFrame({"frame_number":frames, "license_plate_class":lp_classes, "license_plate_bbox":lp_bboxes, "recognized_text":rts})
-        # return df
+    
     except Exception as e:
         print(f"Error processing frame {frame_id}: {e}")
         print(traceback.print_exc())  
+    
     finally:
         file_path = "/work/result.json"
         with open(file_path, 'w') as f:
