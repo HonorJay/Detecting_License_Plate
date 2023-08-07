@@ -1,4 +1,3 @@
-
 import torch
 import sys
 import os
@@ -15,8 +14,9 @@ from models.experimental import attempt_load
 import cv2
 import pandas as pd
 import numpy as np
-from pororo import Pororo
 import logging
+import ast
+import requests
 
 class Detection:
     """Handles the object detection tasks."""
@@ -126,11 +126,10 @@ class Arguments:
 
 
 def main(video_path):
-    try:
-        ocr = Pororo(task='ocr', lang='ko')
-        logging.warning("call pororo framework")
-    except Exception as e:
-        logging.warning("exception : {}".format(e))
+    
+    url = "http://dl.search.t3q.ai/model/api/ab3b8/inference_file"
+    payload={}
+    
         
 
     opt = Arguments(video_path)
@@ -167,7 +166,11 @@ def main(video_path):
                     logging.warning("save temporary image file")
                     try:
                         if os.path.isfile(tmp):
-                            recognized_text = ocr('./tmp.jpg')
+                            files=[('files',('파일명',open(tmp,'rb'),'파일형식'))]
+                            headers = {}
+                            response = requests.request("POST", url, headers=headers, data=payload, files=files)
+                            recognized_text = response.text
+                            recognized_text = " ".join(ast.literal_eval(recognized_text)).strip()
                             os.remove(tmp)
                             logging.warning("recognized_text : {}".format(recognized_text))
                         else:
