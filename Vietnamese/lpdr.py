@@ -165,12 +165,16 @@ def main(video_path):
                     tmp = './tmp.jpg'
                     cv2.imwrite(tmp, lp_image)
                     logging.warning("save temporary image file")
-                    if os.path.isfile(tmp):
-                        recognized_text = ocr('./tmp.jpg')
-                        os.remove(tmp)
-                    else:
-                        logging.warning("counldn't get any image file")
-                        continue
+                    try:
+                        if os.path.isfile(tmp):
+                            recognized_text = ocr('./tmp.jpg')
+                            os.remove(tmp)
+                            logging.warning("recognized_text : {}".format(recognized_text))
+                        else:
+                            logging.warning("counldn't get any image file")
+                            continue
+                    except Exception as e:
+                        logging.waring("exception : {}".format(e))
 
                     frame_results.append({"license_plate": lp_result_dict, "recognized_text": recognized_text})
 
