@@ -1,4 +1,4 @@
-import numpy as np
+
 import torch
 import sys
 import os
@@ -14,6 +14,7 @@ from utils.general import non_max_suppression, scale_coords
 from models.experimental import attempt_load
 import cv2
 import pandas as pd
+import numpy as np
 from pororo import Pororo
 import logging
 
@@ -125,7 +126,9 @@ class Arguments:
 
 
 def main(video_path):
-    
+    ocr = Pororo(task='ocr', lang='ko')
+    logging.warning("call pororo framework")
+
     opt = Arguments(video_path)
     lp_model=Detection(size=opt.lp_imgsz,weights_path=opt.lp_weights,device=opt.device,iou_thres=opt.iou_thres,conf_thres=opt.conf_thres)
     logging.warning("load model")
@@ -155,12 +158,12 @@ def main(video_path):
                         print("\nEmpty bounding box for frame: ", frame_id, f"bbox: {int(bbox[0])}:{int(bbox[2])}, {int(bbox[1])}:{int(bbox[3])}")
                         continue
                     # save the temporary image for pororo OCR
-                    ocr = Pororo(task='ocr', lang='ko')
-
                     tmp = './tmp.jpg'
                     cv2.imwrite(tmp, lp_image)
+                    logging.warning("save temporary image file")
                     if os.path.isfile(tmp):
                         recognized_text = ocr('./tmp.jpg')
+                        os.remove(tmp)
                     else:
                         logging.warning("counldn't get any image file")
                         continue
