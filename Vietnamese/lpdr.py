@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import sys
+import os
 import traceback
 import json
 
@@ -138,10 +139,12 @@ def main(video_path):
     logging.warning("total frame : {}".format(num_frames))
     try:
         for frame_id in range(num_frames):
+            logging.warning("now frame : {}".format(frame_id))
             ret, frame = cap.read()
             if not ret:
                 break
             lp_results, resized_img = lp_model.detect(frame.copy()) 
+            logging.warning("found {} license plate".format(len(lp_results)))
             frame_results = []
             for lp_result in lp_results:
                 if lp_result[0] in ['square license plate', 'rectangle license plate']:
@@ -152,10 +155,17 @@ def main(video_path):
                         print("\nEmpty bounding box for frame: ", frame_id, f"bbox: {int(bbox[0])}:{int(bbox[2])}, {int(bbox[1])}:{int(bbox[3])}")
                         continue
                     # save the temporary image for pororo OCR
-                    cv2.imwrite('./tmp.jpg',lp_image)
-                    ocr = Pororo(task='ocr', lang='ko')('./tmp.jpg')
+                    ocr = Pororo(task='ocr', lang='ko')
 
-                    frame_results.append({"license_plate": lp_result_dict, "recognized_text": ocr})
+                    tmp = './tmp.jpg'
+                    cv2.imwrite(tmp, lp_image)
+                    if os.path.isfile(tmp):
+                        recognized_text = ocr('./tmp.jpg')
+                    else:
+                        logging.warning("counldn't get any image file")
+                        continue
+
+                    frame_results.append({"license_plate": lp_result_dict, "recognized_text": recognized_text})
 
             results[frame_id] = frame_results  # Store results for this frame
     
