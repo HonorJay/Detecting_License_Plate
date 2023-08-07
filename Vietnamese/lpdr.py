@@ -1,4 +1,3 @@
-
 import torch
 import sys
 import os
@@ -192,8 +191,8 @@ def main(video_path):
     
     finally:
         file_path = "/work/result.json"
-        with open(file_path, 'w') as f:
-           json_object = json.dump(results, f)
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json_object = json.dump(results, f)
         
     cap.release()
     cv2.destroyAllWindows()
