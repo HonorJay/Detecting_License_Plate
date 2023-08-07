@@ -126,8 +126,12 @@ class Arguments:
 
 
 def main(video_path):
-    ocr = Pororo(task='ocr', lang='ko')
-    logging.warning("call pororo framework")
+    try:
+        ocr = Pororo(task='ocr', lang='ko')
+        logging.warning("call pororo framework")
+    except Exception as e:
+        logging.warning("exception : {}".format(e))
+        
 
     opt = Arguments(video_path)
     lp_model=Detection(size=opt.lp_imgsz,weights_path=opt.lp_weights,device=opt.device,iou_thres=opt.iou_thres,conf_thres=opt.conf_thres)
