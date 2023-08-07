@@ -1,8 +1,10 @@
+
 import torch
 import sys
 import os
 import traceback
 import json
+import re
 
 sys.path.append('/work/Detecting_License_Plate/yolov5')
 
@@ -164,20 +166,21 @@ def main(video_path):
                     tmp = './tmp.jpg'
                     cv2.imwrite(tmp, lp_image)
                     logging.warning("save temporary image file")
-                    try:
-                        if os.path.isfile(tmp):
-                            files=[('files',('파일명',open(tmp,'rb'),'파일형식'))]
-                            headers = {}
-                            response = requests.request("POST", url, headers=headers, data=payload, files=files)
-                            recognized_text = response.text
-                            recognized_text = " ".join(ast.literal_eval(recognized_text)).strip()
-                            os.remove(tmp)
-                            logging.warning("recognized_text : {}".format(recognized_text))
-                        else:
-                            logging.warning("counldn't get any image file")
+                    if os.path.isfile(tmp):
+                        files=[('files',('파일명',open(tmp,'rb'),'파일형식'))]
+                        headers = {}
+                        response = requests.request("POST", url, headers=headers, data=payload, files=files)
+                        recognized_text = ast.literal_eval(response.text)
+                        if len(recognized_text) == 0:
                             continue
-                    except Exception as e:
-                        logging.waring("exception : {}".format(e))
+                        else:
+                            recognized_text = " ".join(recognized_text).strip()
+                            recognized_text = re.sub(r'[^ 가-힣0-9]', '', recognized_text)
+                        os.remove(tmp)
+                        logging.warning("recognized_text : {}".format(recognized_text))
+                    else:
+                        logging.warning("counldn't get any image file")
+                        continue
 
                     frame_results.append({"license_plate": lp_result_dict, "recognized_text": recognized_text})
 
